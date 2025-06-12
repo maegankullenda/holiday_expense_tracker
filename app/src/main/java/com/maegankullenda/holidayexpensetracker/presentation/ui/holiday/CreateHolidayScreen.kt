@@ -15,6 +15,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.Instant
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.SelectableDates
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,11 +137,19 @@ fun CreateHolidayScreen(
             }
 
             if (state.showDatePicker) {
+                val todayMillis = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 val datePickerState = rememberDatePickerState(
                     initialSelectedDateMillis = if (state.isStartDateSelection) {
                         state.startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                     } else {
                         state.endDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    },
+                    initialDisplayedMonthMillis = todayMillis,
+                    selectableDates = object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                            return utcTimeMillis >= todayMillis
+                        }
+                        override fun isSelectableYear(year: Int): Boolean = true
                     }
                 )
 
