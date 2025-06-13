@@ -43,7 +43,7 @@ fun BudgetCard(
                 )
                 BudgetItem(
                     label = "Remaining",
-                    amount = "${budgetSummary.currency.symbol}${String.format("%.2f", budgetSummary.remainingBudget)}",
+                    amount = "${budgetSummary.currency.symbol}${String.format("%.2f", budgetSummary.remainingAmount)}",
                 )
             }
             

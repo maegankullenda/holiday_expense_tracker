@@ -12,25 +12,25 @@ class ExpenseMapper @Inject constructor() {
     fun mapToDomain(dto: ExpenseDto): Expense {
         return Expense(
             id = dto.id,
+            holidayId = dto.holidayId,
             amount = dto.amount,
             description = dto.description,
             category = ExpenseCategory.valueOf(dto.category),
             date = LocalDate.parse(dto.date),
             currency = Currency.valueOf(dto.currency),
-            holidayId = dto.holidayId,
             createdAt = LocalDateTime.parse(dto.createdAt),
         )
     }
 
     fun mapToDto(domain: Expense): ExpenseDto {
         return ExpenseDto(
-            id = domain.id ?: "",
+            id = domain.id,
+            holidayId = domain.holidayId,
             amount = domain.amount,
             description = domain.description,
             category = domain.category.name,
             date = domain.date.toString(),
             currency = domain.currency.name,
-            holidayId = domain.holidayId,
             createdAt = domain.createdAt.toString(),
         )
     }

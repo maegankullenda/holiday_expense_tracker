@@ -7,6 +7,9 @@ import java.time.LocalDate
 
 @Dao
 interface ExpenseDao {
+    @Query("SELECT * FROM expenses")
+    fun getExpensesStream(): Flow<List<ExpenseEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: ExpenseEntity)
 

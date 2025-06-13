@@ -1,10 +1,9 @@
 package com.maegankullenda.holidayexpensetracker.domain.model
 
-import java.math.BigDecimal
-import java.util.Date
-import java.util.UUID
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 
 data class Expense(
     val id: String,
@@ -14,15 +13,5 @@ data class Expense(
     val category: ExpenseCategory,
     val date: LocalDate,
     val currency: Currency,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-)
-
-enum class ExpenseCategory {
-    FOOD,
-    ACCOMMODATION,
-    TRANSPORTATION,
-    ENTERTAINMENT,
-    SHOPPING,
-    SIGHTSEEING,
-    OTHER,
-} 
+    val createdAt: LocalDateTime = LocalDateTime.now()
+) 

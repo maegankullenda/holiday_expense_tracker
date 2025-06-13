@@ -124,6 +124,9 @@ dependencies {
     testImplementation("com.google.truth:truth:1.4.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("app.cash.turbine:turbine:1.0.0")
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Android Testing
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

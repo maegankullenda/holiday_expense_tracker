@@ -1,0 +1,8 @@
+version: v1.25.0
+ignore:
+  "npm:some-vulnerability:20200101":
+    - "*":
+        reason: "No fix available"
+        expires: "2024-12-31T00:00:00.000Z"
+        created: "2024-01-01T00:00:00.000Z"
+patch: {}

@@ -1,96 +1,61 @@
 package com.maegankullenda.holidayexpensetracker.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.maegankullenda.holidayexpensetracker.presentation.ui.budget.BudgetScreen
 import com.maegankullenda.holidayexpensetracker.presentation.ui.expense.AddExpenseScreen
 import com.maegankullenda.holidayexpensetracker.presentation.ui.expense.ExpenseHistoryScreen
-import com.maegankullenda.holidayexpensetracker.presentation.ui.holiday.CreateHolidayScreen
 import com.maegankullenda.holidayexpensetracker.presentation.ui.holiday.HolidayListScreen
-import com.maegankullenda.holidayexpensetracker.presentation.ui.settings.SettingsScreen
-
-sealed class Screen(val route: String) {
-    object HolidayList : Screen("holiday_list")
-    object CreateHoliday : Screen("create_holiday")
-    object Budget : Screen("budget")
-    object ExpenseHistory : Screen("expense_history")
-    object AddExpense : Screen("add_expense")
-    object Settings : Screen("settings")
-}
+import com.maegankullenda.holidayexpensetracker.presentation.ui.holiday.CreateHolidayScreen
+import com.maegankullenda.holidayexpensetracker.presentation.ui.budget.DailySpendSummaryScreen
 
 @Composable
-fun Navigation(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
+fun Navigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.HolidayList.route,
-        modifier = modifier
+        startDestination = "holiday_list"
     ) {
-        composable(route = Screen.HolidayList.route) {
+        composable("holiday_list") {
             HolidayListScreen(
                 onNavigateToCreateHoliday = {
-                    navController.navigate(Screen.CreateHoliday.route)
+                    navController.navigate("create_holiday")
                 },
                 onHolidaySelected = {
-                    navController.navigate(Screen.Budget.route)
+                    navController.navigate("budget")
                 }
             )
         }
-
-        composable(route = Screen.CreateHoliday.route) {
+        composable("create_holiday") {
             CreateHolidayScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onHolidayCreated = {
-                    navController.navigate(Screen.Budget.route) {
-                        popUpTo(Screen.HolidayList.route)
-                    }
-                }
+                onNavigateBack = { navController.popBackStack() },
+                onHolidayCreated = { navController.popBackStack() }
             )
         }
-
-        composable(route = Screen.Budget.route) {
+        composable("budget") {
             BudgetScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToAddExpense = {
-                    navController.navigate(Screen.AddExpense.route)
-                },
-                onNavigateToExpenseHistory = {
-                    navController.navigate(Screen.ExpenseHistory.route)
-                }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddExpense = { navController.navigate("add_expense") },
+                onNavigateToExpenseHistory = { navController.navigate("expense_history") },
+                onNavigateToDailySpendSummary = { navController.navigate("daily_spend_summary") }
             )
         }
-
-        composable(route = Screen.ExpenseHistory.route) {
-            ExpenseHistoryScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-            )
-        }
-
-        composable(route = Screen.AddExpense.route) {
+        composable("add_expense") {
             AddExpenseScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
-
-        composable(route = Screen.Settings.route) {
-            SettingsScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
+        composable("expense_history") {
+            ExpenseHistoryScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
+        composable("daily_spend_summary") {
+            DailySpendSummaryScreen(
+                navController = navController
+            )
+        }
+        // Add other navigation destinations as needed
     }
 } 

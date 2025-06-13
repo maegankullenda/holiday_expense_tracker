@@ -7,17 +7,39 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maegankullenda.holidayexpensetracker.domain.model.Expense
 import com.maegankullenda.holidayexpensetracker.domain.model.ExpenseCategory
+import com.maegankullenda.holidayexpensetracker.domain.model.BudgetSummary
+import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 import com.maegankullenda.holidayexpensetracker.domain.usecase.GetBudgetSummaryUseCase
 import com.maegankullenda.holidayexpensetracker.domain.usecase.ManageExpenseUseCase
 import com.maegankullenda.holidayexpensetracker.domain.usecase.ManageHolidayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
+
+data class BudgetState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val totalBudget: Double = 0.0,
+    val spentAmount: Double = 0.0,
+    val remainingAmount: Double = 0.0,
+    val dailySpend: Double = 0.0,
+    val amount: String = "",
+    val description: String = "",
+    val selectedCategory: ExpenseCategory = ExpenseCategory.OTHER,
+    val currentHoliday: com.maegankullenda.holidayexpensetracker.domain.model.Holiday? = null,
+    val currency: Currency = Currency.ZAR
+)
+
+sealed class BudgetEvent {
+    data class OnAmountChange(val amount: String) : BudgetEvent()
+    data class OnDescriptionChange(val description: String) : BudgetEvent()
+    data class OnCategorySelect(val category: String) : BudgetEvent()
+    object OnAddExpense : BudgetEvent()
+    object OnDismissError : BudgetEvent()
+}
 
 @HiltViewModel
 class BudgetViewModel @Inject constructor(
@@ -27,32 +49,46 @@ class BudgetViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BudgetState())
-    val state: StateFlow<BudgetState> = _state
+    val state: StateFlow<BudgetState> = _state.asStateFlow()
 
     init {
         loadBudgetSummary()
         loadCurrentHoliday()
     }
 
-    fun loadBudgetSummary() {
+    private fun loadBudgetSummary() {
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true) }
-                getBudgetSummaryUseCase().collect { summary ->
-                    _state.update { it.copy(
-                        isLoading = false,
-                        budgetSummary = summary
-                    ) }
+            getBudgetSummaryUseCase()
+                .onStart { _state.update { it.copy(isLoading = true) } }
+                .catch { error ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = error.message
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update { 
-                    it.copy(
-                        isLoading = false,
-                        error = e.message ?: "Failed to load budget summary"
-                    )
+                .collect { summary ->
+                    summary?.let { safeSummary ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                totalBudget = safeSummary.totalBudget,
+                                spentAmount = safeSummary.spentAmount,
+                                remainingAmount = safeSummary.remainingAmount,
+                                dailySpend = calculateDailySpend(safeSummary)
+                            )
+                        }
+                    }
                 }
-            }
         }
+    }
+
+    private fun calculateDailySpend(summary: BudgetSummary): Double {
+        val today = LocalDate.now()
+        return summary.expenses
+            .filter { expense -> expense.date == today }
+            .sumOf { expense -> expense.amount }
     }
 
     fun loadCurrentHoliday() {

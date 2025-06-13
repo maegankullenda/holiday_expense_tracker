@@ -1,5 +1,6 @@
 package com.maegankullenda.holidayexpensetracker.presentation.ui.holiday
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.maegankullenda.holidayexpensetracker.domain.model.Holiday
@@ -35,17 +36,21 @@ class HolidayListViewModel @Inject constructor(
     val state: StateFlow<HolidayListState> = _state
 
     init {
+        Log.d("HolidayListViewModel", "Initializing ViewModel")
         loadHolidays()
     }
 
     private fun loadHolidays() {
+        Log.d("HolidayListViewModel", "Loading holidays")
         viewModelScope.launch {
             try {
                 manageHolidayUseCase.getAllHolidaysStream()
                     .map { holidays -> 
+                        Log.d("HolidayListViewModel", "Received ${holidays.size} holidays")
                         holidays.sortedBy { it.startDate }
                     }
                     .collect { sortedHolidays ->
+                        Log.d("HolidayListViewModel", "Updating state with ${sortedHolidays.size} holidays")
                         _state.update {
                             it.copy(
                                 holidays = sortedHolidays,
@@ -55,6 +60,7 @@ class HolidayListViewModel @Inject constructor(
                         }
                     }
             } catch (e: Exception) {
+                Log.e("HolidayListViewModel", "Error loading holidays", e)
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -66,10 +72,12 @@ class HolidayListViewModel @Inject constructor(
     }
 
     fun setActiveHoliday(holiday: Holiday) {
+        Log.d("HolidayListViewModel", "Setting active holiday: ${holiday.name}")
         viewModelScope.launch {
             try {
                 manageHolidayUseCase.setActiveHoliday(holiday.id)
             } catch (e: Exception) {
+                Log.e("HolidayListViewModel", "Error setting active holiday", e)
                 _state.update {
                     it.copy(error = e.message ?: "Failed to set active holiday")
                 }
@@ -80,6 +88,7 @@ class HolidayListViewModel @Inject constructor(
     fun onEvent(event: HolidayListEvent) {
         when (event) {
             is HolidayListEvent.DeleteHoliday -> {
+                Log.d("HolidayListViewModel", "Showing delete confirmation for holiday: ${event.holiday.name}")
                 _state.update {
                     it.copy(
                         showDeleteConfirmation = true,
@@ -88,9 +97,11 @@ class HolidayListViewModel @Inject constructor(
                 }
             }
             is HolidayListEvent.ConfirmDelete -> {
+                Log.d("HolidayListViewModel", "Confirming delete for holiday: ${state.value.holidayToDelete?.name}")
                 deleteHoliday()
             }
             is HolidayListEvent.DismissDeleteDialog -> {
+                Log.d("HolidayListViewModel", "Dismissing delete dialog")
                 _state.update {
                     it.copy(
                         showDeleteConfirmation = false,
@@ -103,6 +114,7 @@ class HolidayListViewModel @Inject constructor(
 
     private fun deleteHoliday() {
         val holidayToDelete = state.value.holidayToDelete ?: return
+        Log.d("HolidayListViewModel", "Deleting holiday: ${holidayToDelete.name}")
         
         viewModelScope.launch {
             try {
@@ -114,6 +126,7 @@ class HolidayListViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                Log.e("HolidayListViewModel", "Error deleting holiday", e)
                 _state.update {
                     it.copy(
                         error = e.message ?: "Failed to delete holiday",

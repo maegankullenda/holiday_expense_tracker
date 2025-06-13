@@ -2,13 +2,13 @@ package com.maegankullenda.holidayexpensetracker.data.repository.impl
 
 import com.maegankullenda.holidayexpensetracker.data.local.dao.ExpenseDao
 import com.maegankullenda.holidayexpensetracker.data.local.entity.ExpenseEntity
+import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 import com.maegankullenda.holidayexpensetracker.domain.model.Expense
 import com.maegankullenda.holidayexpensetracker.domain.repository.ExpenseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
 import javax.inject.Inject
 
 class ExpenseRepositoryImpl @Inject constructor(
@@ -19,8 +19,8 @@ class ExpenseRepositoryImpl @Inject constructor(
         return expenseDao.getExpenseById(id)?.toDomain()
     }
 
-    override fun getExpensesStreamByHolidayId(holidayId: String): Flow<List<Expense>> {
-        return expenseDao.getExpensesStreamByHolidayId(holidayId).map { entities ->
+    override fun getExpensesStream(): Flow<List<Expense>> {
+        return expenseDao.getExpensesStream().map { entities ->
             entities.map { it.toDomain() }
         }
     }
@@ -49,6 +49,12 @@ class ExpenseRepositoryImpl @Inject constructor(
         expenseDao.deleteExpenseById(id)
     }
 
+    override fun getExpensesStreamByHolidayId(holidayId: String): Flow<List<Expense>> {
+        return expenseDao.getExpensesStreamByHolidayId(holidayId).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     private fun ExpenseEntity.toDomain(): Expense {
         return Expense(
             id = id,
@@ -56,9 +62,9 @@ class ExpenseRepositoryImpl @Inject constructor(
             amount = amount,
             description = description,
             category = category,
-            date = date,
+            date = date.toLocalDate(),
             currency = currency,
-            createdAt = createdAt,
+            createdAt = createdAt
         )
     }
 
@@ -69,9 +75,9 @@ class ExpenseRepositoryImpl @Inject constructor(
             amount = amount,
             description = description,
             category = category,
-            date = date,
+            date = date.atStartOfDay(),
             currency = currency,
-            createdAt = createdAt ?: LocalDateTime.now(),
+            createdAt = createdAt
         )
     }
 } 

@@ -6,7 +6,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 import com.maegankullenda.holidayexpensetracker.domain.model.ExpenseCategory
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity(
@@ -16,12 +15,10 @@ import java.time.LocalDateTime
             entity = HolidayEntity::class,
             parentColumns = ["id"],
             childColumns = ["holidayId"],
-            onDelete = ForeignKey.CASCADE,
-        ),
+            onDelete = ForeignKey.CASCADE
+        )
     ],
-    indices = [
-        Index("holidayId"),
-    ],
+    indices = [Index("holidayId")]
 )
 data class ExpenseEntity(
     @PrimaryKey
@@ -30,7 +27,7 @@ data class ExpenseEntity(
     val amount: Double,
     val description: String,
     val category: ExpenseCategory,
-    val date: LocalDate,
+    val date: LocalDateTime,
     val currency: Currency,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now()
 ) 
