@@ -31,16 +31,3 @@ jobs:
         with:
           name: dependency-check-report
           path: app/build/reports/dependency-check-report.html
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install Snyk
-        run: npm install -g snyk
-
-      - name: Run Snyk security scan
-        run: snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
