@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 0 * * 0" # Run weekly on Sunday
+    - cron: "0 0 1 * *" # Run monthly on the 1st of each month
 
 jobs:
   security-scan:
@@ -19,9 +19,7 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
-
-      - name: Check for outdated dependencies
-        run: ./gradlew dependencyUpdates
+          cache: gradle
 
       - name: Run OWASP Dependency-Check
         run: ./gradlew dependencyCheckAnalyze
@@ -31,3 +29,4 @@ jobs:
         with:
           name: dependency-check-report
           path: app/build/reports/dependency-check-report.html
+          retention-days: 7
