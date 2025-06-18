@@ -30,7 +30,8 @@ data class BudgetState(
     val description: String = "",
     val selectedCategory: ExpenseCategory = ExpenseCategory.OTHER,
     val currentHoliday: com.maegankullenda.holidayexpensetracker.domain.model.Holiday? = null,
-    val currency: Currency = Currency.ZAR
+    val currency: Currency = Currency.ZAR,
+    val daysRemaining: Int = 0
 )
 
 sealed class BudgetEvent {
@@ -95,7 +96,18 @@ class BudgetViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 manageHolidayUseCase.getCurrentHolidayStream().collect { holiday ->
-                    _state.update { it.copy(currentHoliday = holiday) }
+                    val daysRemaining = if (holiday != null) {
+                        val today = LocalDate.now()
+                        val endDate = holiday.endDate
+                        if (endDate.isAfter(today)) {
+                            java.time.temporal.ChronoUnit.DAYS.between(today, endDate).toInt()
+                        } else {
+                            0
+                        }
+                    } else {
+                        0
+                    }
+                    _state.update { it.copy(currentHoliday = holiday, daysRemaining = daysRemaining) }
                 }
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message ?: "Failed to load current holiday") }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +68,14 @@ fun DailySpendSummaryScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
-                        text = "£%.2f".format(state.dailySpend),
+                        text = when (state.currency) {
+                            Currency.ZAR -> "R%.2f".format(state.dailySpend)
+                            Currency.USD -> "$%.2f".format(state.dailySpend)
+                            Currency.GBP -> "£%.2f".format(state.dailySpend)
+                            Currency.EUR -> "€%.2f".format(state.dailySpend)
+                            Currency.AUD -> "A$%.2f".format(state.dailySpend)
+                            Currency.CAD -> "C$%.2f".format(state.dailySpend)
+                        },
                         style = MaterialTheme.typography.headlineLarge
                     )
                 }
@@ -76,24 +84,63 @@ fun DailySpendSummaryScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "Budget Status",
+                text = "Today's Budget Status",
                 style = MaterialTheme.typography.titleLarge
             )
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Today's Allocation",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = when (state.currency) {
+                            Currency.ZAR -> "R%.2f".format(state.remainingAmount / state.daysRemaining)
+                            Currency.USD -> "$%.2f".format(state.remainingAmount / state.daysRemaining)
+                            Currency.GBP -> "£%.2f".format(state.remainingAmount / state.daysRemaining)
+                            Currency.EUR -> "€%.2f".format(state.remainingAmount / state.daysRemaining)
+                            Currency.AUD -> "A$%.2f".format(state.remainingAmount / state.daysRemaining)
+                            Currency.CAD -> "C$%.2f".format(state.remainingAmount / state.daysRemaining)
+                        },
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
             LinearProgressIndicator(
-                progress = (state.spentAmount / state.totalBudget).toFloat().coerceIn(0f, 1f),
+                progress = (state.dailySpend / (state.remainingAmount / state.daysRemaining)).toFloat().coerceIn(0f, 1f),
                 modifier = Modifier.fillMaxWidth()
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = "%.1f%% of budget used".format(
-                    (state.spentAmount / state.totalBudget * 100).coerceIn(0.0, 100.0)
+                text = "%.1f%% of today's allocation used".format(
+                    (state.dailySpend / (state.remainingAmount / state.daysRemaining) * 100).coerceIn(0.0, 100.0)
                 ),
                 style = MaterialTheme.typography.bodyLarge
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = "${state.daysRemaining} days remaining",
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
