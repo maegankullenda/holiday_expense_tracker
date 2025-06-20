@@ -5,10 +5,17 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Currency
+import java.util.Date
 
 class RoomConverters {
     private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
     private val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    @TypeConverter
+    fun fromDate(value: Date?): Long? = value?.time
+
+    @TypeConverter
+    fun toDate(value: Long?): Date? = value?.let { Date(it) }
 
     @TypeConverter
     fun fromLocalDate(value: LocalDate?): String? {

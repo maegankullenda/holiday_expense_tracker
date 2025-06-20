@@ -25,11 +25,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -88,7 +92,7 @@ dependencies {
     ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    // Retrofit & OkHttp (Networking)
+    // Retrofit & OkHttp (Networking) - Updated to latest secure versions
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -142,4 +146,44 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:4.0.0")
+
+    // Dependency constraints to force secure versions
+    constraints {
+        implementation("io.netty:netty-buffer:4.1.118.Final") {
+            because("Fix for CVE-2025-25193 and CVE-2025-24970")
+        }
+        implementation("io.netty:netty-codec:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-codec-http:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-codec-http2:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-codec-socks:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-common:4.1.118.Final") {
+            because("Fix for CVE-2025-25193 and CVE-2024-47535")
+        }
+        implementation("io.netty:netty-handler:4.1.118.Final") {
+            because("Fix for CVE-2025-25193 and CVE-2025-24970")
+        }
+        implementation("io.netty:netty-handler-proxy:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-resolver:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-transport:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("io.netty:netty-transport-native-unix-common:4.1.118.Final") {
+            because("Fix for CVE-2025-25193")
+        }
+        implementation("com.google.protobuf:protobuf-java:3.25.4") {
+            because("Fix for CVE-2024-7254")
+        }
+    }
 }

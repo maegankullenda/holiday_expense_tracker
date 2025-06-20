@@ -1,0 +1,23 @@
+buildscript {
+    ext {
+        compose_version = '1.5.1'
+        kotlin_version = '1.9.22'
+        kapt_version = '1.9.22'
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.9.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.50'
+        classpath 'org.owasp:dependency-check-gradle:8.4.3'
+    }
+}
+
+plugins {
+    id 'base'
+    id 'org.owasp.dependencycheck' version '8.4.3' apply false
+} 

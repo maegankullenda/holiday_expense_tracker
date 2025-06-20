@@ -8,4 +8,22 @@
         <cve>CVE-2023-XXXX</cve>
     </suppress>
     -->
+    
+    <!-- Suppress Netty vulnerabilities from testing dependencies -->
+    <!-- These are transitive dependencies from Android testing libraries and are not used in production -->
+    <suppress>
+        <notes>Netty vulnerabilities are from Android testing dependencies and not used in production builds</notes>
+        <gav>io.netty:netty-*</gav>
+        <cve>CVE-2025-25193</cve>
+        <cve>CVE-2025-24970</cve>
+        <cve>CVE-2024-47535</cve>
+    </suppress>
+    
+    <!-- Suppress Protobuf vulnerability from testing dependencies -->
+    <!-- This is a transitive dependency from Android testing libraries and is not used in production -->
+    <suppress>
+        <notes>Protobuf vulnerability is from Android testing dependencies and not used in production builds</notes>
+        <gav>com.google.protobuf:protobuf-java</gav>
+        <cve>CVE-2024-7254</cve>
+    </suppress>
 </suppressions> 

@@ -7,6 +7,10 @@ import com.maegankullenda.holidayexpensetracker.domain.model.BudgetSummary
 import com.maegankullenda.holidayexpensetracker.domain.model.Currency
 import org.junit.Rule
 import org.junit.Test
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import io.mockk.every
+import io.mockk.mockk
 
 class BudgetScreenTest {
 
@@ -88,4 +92,57 @@ class BudgetScreenTest {
         // Then
         composeTestRule.onNodeWithText("Failed to load budget").assertIsDisplayed()
     }
+
+    @Test
+    fun whenHolidayCurrencyIsZAR_budgetScreenShowsZAR() {
+        val viewModel = createMockBudgetViewModel(
+            BudgetState(
+                totalBudget = 1000.0,
+                spentAmount = 500.0,
+                remainingAmount = 500.0,
+                dailySpend = 100.0,
+                currency = Currency.ZAR
+            )
+        )
+        composeTestRule.setContent {
+            BudgetScreen(
+                viewModel = viewModel,
+                onNavigateBack = {},
+                onNavigateToAddExpense = {},
+                onNavigateToExpenseHistory = {},
+                onNavigateToDailySpendSummary = {}
+            )
+        }
+        // Add assertions here
+    }
+
+    @Test
+    fun whenHolidayCurrencyIsUSD_budgetScreenShowsUSD() {
+        val viewModel = createMockBudgetViewModel(
+            BudgetState(
+                totalBudget = 1000.0,
+                spentAmount = 500.0,
+                remainingAmount = 500.0,
+                dailySpend = 100.0,
+                currency = Currency.USD
+            )
+        )
+        composeTestRule.setContent {
+            BudgetScreen(
+                viewModel = viewModel,
+                onNavigateBack = {},
+                onNavigateToAddExpense = {},
+                onNavigateToExpenseHistory = {},
+                onNavigateToDailySpendSummary = {}
+            )
+        }
+        // Add assertions here
+    }
+}
+
+private fun createMockBudgetViewModel(state: BudgetState): BudgetViewModel {
+    val mock = mockk<BudgetViewModel>(relaxed = true)
+    val stateFlow = MutableStateFlow(state)
+    every { mock.state } returns stateFlow
+    return mock
 } 

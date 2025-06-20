@@ -37,7 +37,6 @@ fun Navigation(navController: NavHostController) {
             BudgetScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToAddExpense = { navController.navigate("add_expense") },
-                onNavigateToExpenseHistory = { navController.navigate("expense_history") },
                 onNavigateToDailySpendSummary = { navController.navigate("daily_spend_summary") }
             )
         }
@@ -53,7 +52,8 @@ fun Navigation(navController: NavHostController) {
         }
         composable("daily_spend_summary") {
             DailySpendSummaryScreen(
-                navController = navController
+                navController = navController,
+                onNavigateToExpenseHistory = { navController.navigate("expense_history") }
             )
         }
         // Add other navigation destinations as needed
